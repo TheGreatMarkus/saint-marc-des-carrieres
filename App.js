@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button, Alert } from 'react-native';
-import HomePage from './HomePage';
-import CatalogPage from './CatalogPage';
-import CameraPage from './CameraPage';
+import HomePage from './src/pages/HomePage';
+import CatalogPage from './src/pages/CatalogPage';
+import CameraPage from './src/pages/CameraPage';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 
