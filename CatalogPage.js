@@ -12,6 +12,13 @@ export default class CatalogPage extends Component {
         <Text style={styles.headerText}>
           Catalog page
         </Text>
+
+        <Button
+          onPress={() => this.props.navigation.navigate('Home')}
+          title="home"
+          color="green"
+        />
+
       </View>
     );
   }
