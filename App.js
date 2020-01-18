@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, Button, Alert } from 'react-native';
 import HomePage from './HomePage';
 import CatalogPage from './CatalogPage';
-import TrashCamera from './TrashCamera';
+import CameraPage from './CameraPage';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 
@@ -25,7 +25,7 @@ const RootStack = createStackNavigator(
   {
     Home: HomePage,
     Catalog: CatalogPage,
-    Camera: TrashCamera
+    Camera: CameraPage
   },
   {
     initialRouteName: 'Home',
