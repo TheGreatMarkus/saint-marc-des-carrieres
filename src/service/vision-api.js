@@ -55,7 +55,7 @@ const itemCategories = [
     },
     {
         name: "Organic Material",
-        labels: ['food', 'apple'],
+        labels: ['food', 'apple', 'banana', 'fruit'],
         actions: [actions.compost,  actions.trash],
         info: 'Things that are compostable include some foods, dead leaves, fruit and vegetable scraps, cardboard, and more. Organics that arent compostable include things that emit odors and attract rodents and flies, such as fats and oils, dairy products and meat products.'
     },
@@ -142,17 +142,16 @@ export const getImageInformation = async (base64Image) => {
  */
 const stringContainsKeywords = (string, keywords) => {
     let regex = new RegExp(`\\b(${keywords.join("|")})\\b`, 'i');
-    // console.log(`string: ${string}`);
+    console.log(`string: ${string}`);
     // console.log(`regex: ${regex}`);
     // console.log(`search: ${string.search(regex)}`);
-    // console.log(string.search(regex));
     return string.search(regex) !== -1;
 }
 
 const categorizeItem = (labelString) => {
     for (const { name, labels, actions, info } of itemCategories) {
-        // console.log(`\n\n\nTrying ${name} with labels ${labels.join()}`)
-        // console.log(`labelString: ${labelString}`);
+        console.log(`\n\n\nTrying ${name} with labels ${labels.join()}`)
+        console.log(`labelString: ${labelString}`);
         if (stringContainsKeywords(labelString, labels)) {
             return {
                 category: name,
