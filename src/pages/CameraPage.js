@@ -2,7 +2,7 @@ import React, { useState, useEffect, Component } from 'react';
 import { Text, View, TouchableOpacity, Button, Alert, ScrollView, Image } from 'react-native';
 import { Camera, Permissions } from 'expo-camera';
 import { MaterialIcons } from "@expo/vector-icons";
-import { getLabelsFromImage } from './vision-api';
+import { getLabelsFromImage } from '../service/vision-api';
 
 export default class CameraPage extends Component {
 
