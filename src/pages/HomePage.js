@@ -8,9 +8,15 @@ export default class HomePage extends Component {
     super(props);
   }
 
+  state = {
+    fontLoaded: false
+  }
+
   componentDidMount() {
     Font.loadAsync({
-      'bangers': require('../../assets/Bangers/Bangers-Regular.ttf'),
+      'bangers': require('../../assets/fonts/Bangers-Regular.ttf')
+    }).then(() => {
+      this.setState({ fontLoaded: true });
     });
   }
 
@@ -20,10 +26,13 @@ export default class HomePage extends Component {
   };
 
   render() {
+    if (!this.state.fontLoaded) {
+      return <Text>Loading</Text>
+    }
     return (
       <View style={styles.container}>
         <ImageBackground source={require('../../assets/wallpaper2.png')} style={{ width: '100%', height: '100%' }}>
-         <Text style={styles.headerText}>Trash-It!</Text>
+          <Text style={styles.headerText}>Trash-It!</Text>
           <View style={styles.btnContainer}>
             <Button style={styles.button}
               onPress={() => this.props.navigation.navigate('Camera')}
@@ -35,7 +44,7 @@ export default class HomePage extends Component {
             <Text>
               {"\n"}
             </Text>
-            
+
             <Button style={styles.button}
               backgroundColor="white"
               onPress={() => this.props.navigation.navigate('Map')}
@@ -48,6 +57,7 @@ export default class HomePage extends Component {
       </View>
     );
   }
+
 }
 
 const styles = StyleSheet.create({

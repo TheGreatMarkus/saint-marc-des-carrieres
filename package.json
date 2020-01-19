@@ -32,7 +32,9 @@
     "mem": ">=4.0.0"
   },
   "rnpm": {
-    "assets": ["assets/Bangers"]
-   },
+    "assets": [
+      "./assets/fonts"
+    ]
+  },
   "private": true
 }
