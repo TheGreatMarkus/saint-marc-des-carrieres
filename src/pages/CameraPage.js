@@ -20,7 +20,7 @@ export default class CameraPage extends Component {
     labels: [],
     infos: {
       category: '',
-      action: '',
+      actions: [],
       info: ''
     }
   };
@@ -48,28 +48,30 @@ export default class CameraPage extends Component {
                     source={{ uri: this.state.latestImage }}
                   />
                 )}
-              
-              <View style={styles.textBox}>
-                <Text style={styles.textBoxBig}>What this is: {this.state.infos.category}</Text>
-                <Text style={styles.textBoxBig}>What you can do: {this.state.infos.action}!</Text>
-                <Text style={styles.textBoxText}>{this.state.infos.info}</Text>
-              </View>
 
-              {this.state.infos.action !== 'Unknown' && (
-                <Button style={styles.button}
-                  backgroundColor="green"
-                  onPress={() => this.props.navigation.navigate('Map')}
-                  title="Bring Me!"
-                  borderRadius={100}
-                  color="white"
-                />
-              )}
+                <View style={styles.textBox}>
+                  <Text style={styles.textBoxBig}>What this is: {this.state.infos.category}</Text>
+                  <Text style={styles.textBoxBig}>What you can do: {this.state.infos.actions.join(", ")}!</Text>
+                  <Text style={styles.textBoxText}>{this.state.infos.info}</Text>
+                </View>
+
+                {this.state.infos.actions !== 'Unknown' &&
+                  this.state.infos.actions.map((action, index) => (
+                    <Button
+                      key={index}
+                      backgroundColor="green"
+                      onPress={() => this.props.navigation.navigate('Map', { targetLocation: action })}
+                      title={`${action}!`}
+                      borderRadius={100}
+                      color="white"
+                    />
+                  ))
+
+                }
               </View>
             </View>
           </ScrollView>
         )}
-
-
         {this.state.isCameraVisible && (
           <Camera
             style={styles.camera}
@@ -128,7 +130,7 @@ export default class CameraPage extends Component {
         isCameraVisible: false,
         infos: {
           category: imageInformation.category,
-          action: imageInformation.action,
+          actions: imageInformation.actions,
           info: imageInformation.info
         }
       });
@@ -178,12 +180,11 @@ const styles = {
   textBox: {
     alignItems: "center",
     justifyContent: "center",
-    padding: 5,
-    flex:1
+    padding: 5
   },
   textBoxText: {
     fontSize: 14,
-    padding: 10
+    padding: 10,
   },
   textBoxBig: {
     fontSize: 18,
