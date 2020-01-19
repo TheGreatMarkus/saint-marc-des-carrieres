@@ -4,6 +4,7 @@ import MapView from 'react-native-maps';
 import recyclePoints from '../data/recycle';
 import trashPoints from '../data/trash';
 import compostPoints from '../data/compost';
+import ewastePoints from '../data/e-waste';
 
 
 export default class MapPage extends Component {
@@ -50,6 +51,16 @@ export default class MapPage extends Component {
               }}
               title={'Food Scrap Location'}
               pinColor={'green'}
+            />
+          ))}
+          {ewastePoints.map(ewaste => (
+            <MapView.Marker
+              coordinate={{
+                latitude: ewaste.latitude,
+                longitude: ewaste.longitude
+              }}
+              title={'E-Waste Disposal'}
+              pinColor={'black'}
             />
           ))}
         </MapView>
