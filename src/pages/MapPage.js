@@ -92,7 +92,7 @@ export default class MapPage extends Component {
     return (
       <View style={styles.container}>
         <MapView
-          initialRegion={{
+          region={{
             latitude: this.state.currentPos.latitude,
             longitude: this.state.currentPos.longitude,
             latitudeDelta: 0.001,
