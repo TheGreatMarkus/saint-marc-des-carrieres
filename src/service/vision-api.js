@@ -57,7 +57,7 @@ const itemCategories = [
         name: "Organic Material",
         labels: ['food', 'apple'],
         actions: [actions.compost,  actions.trash],
-        info: 'Things that are compostable include some foods, dead leaves, twigs, grass clippings, fruit and vegetable scraps, coffee grounds, cardboard, and more. Organics that arent compostable include things that emit odors and attract rodents and flies, such as fats and oils, dairy products and meat products.'
+        info: 'Things that are compostable include some foods, dead leaves, fruit and vegetable scraps, cardboard, and more. Organics that arent compostable include things that emit odors and attract rodents and flies, such as fats and oils, dairy products and meat products.'
     },
     {
         name: "E-Waste",

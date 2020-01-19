@@ -33,7 +33,7 @@ export default class CameraPage extends Component {
     return (
       <View style={styles.container}>
         {!this.state.isCameraVisible && (
-          <ScrollView contentContainerStyle={styles.scroll}>
+          <ScrollView style={styles.scroll}>
             <View style={styles.mainContent}>
               <View style={styles.buttonContainer}>
                 <TouchableOpacity onPress={this.openCamera}>
@@ -173,9 +173,7 @@ const styles = {
     flex: 1
   },
   scroll: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center"
+    flex: 1
   },
   textBox: {
     alignItems: "center",

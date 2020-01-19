@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import { Platform, StyleSheet, Text, View, Button, Dimensions, OverlayComponent } from "react-native";
+import { Platform, StyleSheet, Text, View, Dimensions } from "react-native";
+import { Button } from 'react-native-elements';
 import MapView from 'react-native-maps';
 import recyclePoints from '../data/recycle';
 import trashPoints from '../data/trash';
@@ -14,8 +15,8 @@ export default class MapPage extends Component {
       longitude: -73.968639
     },
     currentPos: {
-      latitude: 0,
-      longitude: 0
+      latitude: 40.758572,
+      longitude: -73.968639
     },
     targetText: "",
     doneLoading: false
@@ -25,10 +26,10 @@ export default class MapPage extends Component {
     super(props);
   }
 
-  componentDidMount() {
+  UNSAFE_componentWillMount() {
     const { navigation } = this.props;
     const targetLocation = navigation.getParam("targetLocation", "");
-    this.detStartingCoordinates(targetLocation);
+    this.getStartingCoordinates(targetLocation);
   }
 
   calcCoordDistance(lat1, lon1, lat2, lon2) {
@@ -52,7 +53,7 @@ export default class MapPage extends Component {
     return dis1 - dis2;
   }
 
-  detStartingCoordinates(targetLocation) {
+  getStartingCoordinates(targetLocation) {
     let currentPos = this.state.userPos;
     let text = "";
 
@@ -81,7 +82,6 @@ export default class MapPage extends Component {
       default:
         break;
     }
-
     this.setState({
       currentPos: currentPos,
       targetText: text,
@@ -161,11 +161,41 @@ export default class MapPage extends Component {
               />
             ))
           }
-
+          
         </MapView>
-        <View style={{ position: "absolute", bottom: 50 }}>
+        <View style={{ position: "absolute", top: 50 }}>
           <Text>{this.state.targetText}</Text>
         </View>
+        <View style={styles.mapContainer}>
+            <Button style={styles.mapButton}
+              title="Recycling"
+              backgroundColor="blue"
+              borderRadius={100}
+              color={Platform.OS === 'ios' ? 'white' : 'black'}
+              onPress={() => this.getStartingCoordinates('Recycle')}
+            />
+            <Button style={styles.mapButton}
+              title="Trash"
+              backgroundColor="red"
+              borderRadius={100}
+              color={Platform.OS === 'ios' ? 'white' : 'black'}
+              onPress={() => this.getStartingCoordinates('Trash')}
+            />
+            <Button style={styles.mapButton}
+              title="Compost"
+              backgroundColor="green"
+              borderRadius={100}
+              color={Platform.OS === 'ios' ? 'white' : 'black'}             
+              onPress={() => this.getStartingCoordinates('Compost')}
+            />
+            <Button style={styles.mapButton}
+              title="E-waste"
+              backgroundColor="black"
+              borderRadius={100}
+              color={Platform.OS === 'ios' ? 'white' : 'black'}
+              onPress={() => this.getStartingCoordinates('E-Waste Management')}
+            />
+          </View>
       </View>
     );
   }
@@ -183,4 +213,16 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
   },
+  mapContainer: {
+    display: "flex",
+    backgroundColor: "transparent",
+    flexDirection: "column",
+    alignItems: "flex-start",
+    position: "absolute", 
+    bottom: 10,
+    left: 5
+  },
+  mapButton: {
+    width: 110
+  }
 });
