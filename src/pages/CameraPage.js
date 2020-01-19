@@ -1,8 +1,8 @@
-import React, { useState, useEffect, Component } from 'react';
+import React, { Component } from 'react';
 import { Text, View, TouchableOpacity, Button, Alert, ScrollView, Image } from 'react-native';
-import { Camera, Permissions } from 'expo-camera';
+import { Camera } from 'expo-camera';
 import { MaterialIcons } from "@expo/vector-icons";
-import { getLabelsFromImage } from '../service/vision-api';
+import { getImageInformation } from '../service/vision-api';
 
 export default class CameraPage extends Component {
 
@@ -15,7 +15,12 @@ export default class CameraPage extends Component {
     cameraType: Camera.Constants.Type.back,
     isCameraVisible: true,
     latestImage: null,
-    labels: []
+    labels: [],
+    infos: {
+      category: '',
+      action: '',
+      info: ''
+    }
   };
 
   constructor(props) {
@@ -28,9 +33,6 @@ export default class CameraPage extends Component {
         {!this.state.isCameraVisible && (
           <ScrollView contentContainerStyle={styles.scroll}>
             <View style={styles.mainContent}>
-                <View style={styles.textBox}>
-                  <Text style={styles.textBoxText}>{this.state.labels}</Text>
-                </View>
               <View style={styles.buttonContainer}>
                 <TouchableOpacity onPress={this.openCamera}>
                   <MaterialIcons name="camera-alt" size={40} color="#1083bb" />
@@ -44,6 +46,13 @@ export default class CameraPage extends Component {
                   source={{ uri: this.state.latestImage }}
                 />
               )}
+
+              <View style={styles.textBox}>
+                <Text style={styles.textBoxBig}>What this is: {this.state.infos.category}</Text>
+                <Text style={styles.textBoxBig}>What you can do: {this.state.infos.action}!</Text>
+                <Text style={styles.textBoxText}>{this.state.infos.info}</Text>
+              </View>
+
             </View>
           </ScrollView>
         )}
@@ -98,14 +107,18 @@ export default class CameraPage extends Component {
 
   takePicture = async () => {
     if (this.camera) {
-      let photo = await this.camera.takePictureAsync({ base64: true });      
+      let photo = await this.camera.takePictureAsync({ base64: true });
 
-      let labels = await getLabelsFromImage(photo.base64);
+      let imageInformation = await getImageInformation(photo.base64);
 
       this.setState({
         latestImage: photo.uri,
         isCameraVisible: false,
-        labels: labels
+        infos: {
+          category: imageInformation.category,
+          action: imageInformation.action,
+          info: imageInformation.info
+        }
       });
     };
   }
@@ -149,14 +162,19 @@ const styles = {
   scroll: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
-    marginTop: 70
+    justifyContent: "center"
   },
   textBox: {
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: "#FFF",
     padding: 5
   },
   textBoxText: {
+    fontSize: 14,
+    padding: 10
+  },
+  textBoxBig: {
     fontSize: 18,
     fontWeight: "bold"
   },
