@@ -1,4 +1,4 @@
-import env from "./env.js"
+import env from "../../env.js"
 const googleVisionApi = "https://vision.googleapis.com/v1/images:annotate";
 
 
