@@ -18,6 +18,11 @@ export default class HomePage extends Component {
           title="Take a Picture"
           color="green"
         />
+         <Button
+          onPress={() => this.props.navigation.navigate('Map')}
+          title="Look at Map"
+          color="blue"
+        />
       </View>
     );
   }
