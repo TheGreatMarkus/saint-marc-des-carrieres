@@ -32,13 +32,13 @@ const itemCategories = [
         name: "Paper",
         labels: ['cardboard', 'paper'],
         action: "Recycle/Compost",
-        info: 'Clean paper products are both recyclable and compostable. Soiled paper, such as greasy pizza boxes, are compostable but not recyclable, so rip up that old pizza box and compost it!'
+        info: 'Clean paper products are both recyclable and compostable. Soiled paper, such as greasy pizza boxes, are compostable but not recyclable!'
     },
     {
         name: "Plastic",
         labels: ['plastic'],
         action: "Recycle",
-        info: 'Plastics are often recyclable, but there are a few exceptions: plastic bags, straws and coffee cups aren\'t usually recyclable. Additionally, only CLEAN plastics are recyclable, so wash your food off before putting it in the bin!'
+        info: 'Plastics are often recyclable, but there are a few exceptions: plastic bags, straws and coffee cups. Additionally, only CLEAN plastics are recyclable, so rinse first!'
     },
     {
         name: "Glass",

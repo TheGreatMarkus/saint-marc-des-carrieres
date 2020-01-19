@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { Text, View, TouchableOpacity, Button, Alert, ScrollView, Image } from 'react-native';
+import { Text, View, TouchableOpacity, Alert, ScrollView, Image, SafeAreaView } from 'react-native';
 import { Camera } from 'expo-camera';
 import { MaterialIcons } from "@expo/vector-icons";
 import { getImageInformation } from '../service/vision-api';
+import { Button } from 'react-native-elements';
+
 
 export default class CameraPage extends Component {
 
@@ -37,22 +39,32 @@ export default class CameraPage extends Component {
                 <TouchableOpacity onPress={this.openCamera}>
                   <MaterialIcons name="camera-alt" size={40} color="#1083bb" />
                 </TouchableOpacity>
-              </View>
 
-              {this.state.latestImage && (
-                <Image
-                  style={styles.latestImage}
-                  resizeMode={"cover"}
-                  source={{ uri: this.state.latestImage }}
-                />
-              )}
 
+                {this.state.latestImage && (
+                  <Image
+                    style={styles.latestImage}
+                    resizeMode={"cover"}
+                    source={{ uri: this.state.latestImage }}
+                  />
+                )}
+              
               <View style={styles.textBox}>
                 <Text style={styles.textBoxBig}>What this is: {this.state.infos.category}</Text>
                 <Text style={styles.textBoxBig}>What you can do: {this.state.infos.action}!</Text>
                 <Text style={styles.textBoxText}>{this.state.infos.info}</Text>
               </View>
 
+              {this.state.infos.action !== 'Unknown' && (
+                <Button style={styles.button}
+                  backgroundColor="green"
+                  onPress={() => this.props.navigation.navigate('Map')}
+                  title="Bring Me!"
+                  borderRadius={100}
+                  color="white"
+                />
+              )}
+              </View>
             </View>
           </ScrollView>
         )}
@@ -154,7 +166,6 @@ takePicture = async () => {
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: "#fafafa"
   },
   mainContent: {
     flex: 1
@@ -167,8 +178,8 @@ const styles = {
   textBox: {
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#FFF",
-    padding: 5
+    padding: 5,
+    flex:1
   },
   textBoxText: {
     fontSize: 14,
@@ -180,7 +191,8 @@ const styles = {
   },
   buttonContainer: {
     alignItems: "center",
-    marginTop: 20
+    marginTop: 20,
+    flex: 1
   },
   latestImage: {
     width: 250,
