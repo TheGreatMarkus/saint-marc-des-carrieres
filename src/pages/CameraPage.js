@@ -17,10 +17,9 @@ export default class CameraPage extends Component {
     latestImage: null,
     labels: [],
     infos: {
-      type: '',
-      material: '',
+      category: '',
       action: '',
-      moreInfo: ''
+      info: ''
     }
   };
 
@@ -34,7 +33,7 @@ export default class CameraPage extends Component {
         {!this.state.isCameraVisible && (
           <ScrollView contentContainerStyle={styles.scroll}>
             <View style={styles.mainContent}>
-            <View style={styles.buttonContainer}>
+              <View style={styles.buttonContainer}>
                 <TouchableOpacity onPress={this.openCamera}>
                   <MaterialIcons name="camera-alt" size={40} color="#1083bb" />
                 </TouchableOpacity>
@@ -49,11 +48,11 @@ export default class CameraPage extends Component {
               )}
 
               <View style={styles.textBox}>
-              <Text style={styles.textBoxBig}>{this.state.infos.material} {this.state.infos.type}</Text>
-                <Text style={styles.textBoxBig}>{this.state.infos.action}!</Text>
-                <Text style={styles.textBoxText}>{this.state.infos.moreInfo}</Text>
+                <Text style={styles.textBoxBig}>What this is: {this.state.infos.category}</Text>
+                <Text style={styles.textBoxBig}>What you can do: {this.state.infos.action}!</Text>
+                <Text style={styles.textBoxText}>{this.state.infos.info}</Text>
               </View>
-              
+
             </View>
           </ScrollView>
         )}
@@ -96,7 +95,7 @@ export default class CameraPage extends Component {
     );
   }
 
-  
+
   flipCamera = () => {
     this.setState({
       cameraType:
@@ -108,18 +107,17 @@ export default class CameraPage extends Component {
 
   takePicture = async () => {
     if (this.camera) {
-      let photo = await this.camera.takePictureAsync({ base64: true });      
-      
+      let photo = await this.camera.takePictureAsync({ base64: true });
+
       let imageInformation = await getImageInformation(photo.base64);
 
       this.setState({
         latestImage: photo.uri,
         isCameraVisible: false,
         infos: {
-          type: imageInformation.type,
-          material: imageInformation.material,
+          category: imageInformation.category,
           action: imageInformation.action,
-          moreInfo: imageInformation.moreInfo
+          info: imageInformation.info
         }
       });
     };
