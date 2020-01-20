@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { Text, View, TouchableOpacity, Button, Alert, ScrollView, Image } from 'react-native';
+import { Text, View, TouchableOpacity, Alert, ScrollView, Image, SafeAreaView } from 'react-native';
 import { Camera } from 'expo-camera';
 import { MaterialIcons } from "@expo/vector-icons";
 import { getImageInformation } from '../service/vision-api';
+import { Button } from 'react-native-elements';
+
 
 export default class CameraPage extends Component {
 
@@ -18,7 +20,7 @@ export default class CameraPage extends Component {
     labels: [],
     infos: {
       category: '',
-      action: '',
+      actions: [],
       info: ''
     }
   };
@@ -31,33 +33,45 @@ export default class CameraPage extends Component {
     return (
       <View style={styles.container}>
         {!this.state.isCameraVisible && (
-          <ScrollView contentContainerStyle={styles.scroll}>
+          <ScrollView style={styles.scroll}>
             <View style={styles.mainContent}>
               <View style={styles.buttonContainer}>
                 <TouchableOpacity onPress={this.openCamera}>
                   <MaterialIcons name="camera-alt" size={40} color="#1083bb" />
                 </TouchableOpacity>
+
+
+                {this.state.latestImage && (
+                  <Image
+                    style={styles.latestImage}
+                    resizeMode={"cover"}
+                    source={{ uri: this.state.latestImage }}
+                  />
+                )}
+
+                <View style={styles.textBox}>
+                  <Text style={styles.textBoxBig}>What this is: {this.state.infos.category}</Text>
+                  <Text style={styles.textBoxBig}>What you can do: {this.state.infos.actions.join(", ")}!</Text>
+                  <Text style={styles.textBoxText}>{this.state.infos.info}</Text>
+                </View>
+
+                {this.state.infos.actions !== 'Unknown' &&
+                  this.state.infos.actions.map((action, index) => (
+                    <Button
+                      key={index}
+                      backgroundColor="green"
+                      onPress={() => this.props.navigation.navigate('Map', { targetLocation: action })}
+                      title={`${action}!`}
+                      borderRadius={100}
+                      color="white"
+                    />
+                  ))
+
+                }
               </View>
-
-              {this.state.latestImage && (
-                <Image
-                  style={styles.latestImage}
-                  resizeMode={"cover"}
-                  source={{ uri: this.state.latestImage }}
-                />
-              )}
-
-              <View style={styles.textBox}>
-                <Text style={styles.textBoxBig}>What this is: {this.state.infos.category}</Text>
-                <Text style={styles.textBoxBig}>What you can do: {this.state.infos.action}!</Text>
-                <Text style={styles.textBoxText}>{this.state.infos.info}</Text>
-              </View>
-
             </View>
           </ScrollView>
         )}
-
-
         {this.state.isCameraVisible && (
           <Camera
             style={styles.camera}
@@ -116,7 +130,7 @@ export default class CameraPage extends Component {
         isCameraVisible: false,
         infos: {
           category: imageInformation.category,
-          action: imageInformation.action,
+          actions: imageInformation.actions,
           info: imageInformation.info
         }
       });
@@ -154,25 +168,21 @@ takePicture = async () => {
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: "#fafafa"
   },
   mainContent: {
     flex: 1
   },
   scroll: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center"
+    flex: 1
   },
   textBox: {
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#FFF",
     padding: 5
   },
   textBoxText: {
     fontSize: 14,
-    padding: 10
+    padding: 10,
   },
   textBoxBig: {
     fontSize: 18,
@@ -180,7 +190,8 @@ const styles = {
   },
   buttonContainer: {
     alignItems: "center",
-    marginTop: 20
+    marginTop: 20,
+    flex: 1
   },
   latestImage: {
     width: 250,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button, Alert } from 'react-native';
 import HomePage from './src/pages/HomePage';
-import CatalogPage from './src/pages/CatalogPage';
+import MapPage from './src/pages/MapPage';
 import CameraPage from './src/pages/CameraPage';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
 const RootStack = createStackNavigator(
   {
     Home: HomePage,
-    Catalog: CatalogPage,
+    Map: MapPage,
     Camera: CameraPage
   },
   {
