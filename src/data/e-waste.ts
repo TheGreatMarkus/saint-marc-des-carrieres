@@ -1,4 +1,4 @@
-export default ewastePoints = [
+export const ewastePoints: any[] = [
     {
       "Address": "217 W 79 ST",
       "BBL": 1012270000,

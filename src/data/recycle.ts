@@ -1,4 +1,6 @@
-export default recyclePoints = [
+import { LatLng } from "react-native-maps";
+
+export const recyclePoints: LatLng[]  = [
   {
     latitude: 40.890848989,
     longitude: -73.864223918

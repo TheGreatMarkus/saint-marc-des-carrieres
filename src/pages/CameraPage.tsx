@@ -1,16 +1,41 @@
-import React, { Component } from 'react';
-import { Text, View, TouchableOpacity, Alert, ScrollView, Image, SafeAreaView } from 'react-native';
-import { Camera } from 'expo-camera';
+import React, { Component } from "react";
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  Alert,
+  ScrollView,
+  Image,
+  StyleSheet,
+} from "react-native";
+import { Camera } from "expo-camera";
 import { MaterialIcons } from "@expo/vector-icons";
-import { getImageInformation } from '../service/vision-api';
-import { Button } from 'react-native-elements';
+import { getImageInformation } from "../service/vision-api";
+import { Button } from "react-native-elements";
+import { StackNavigationProp } from "react-navigation-stack/lib/typescript/src/vendor/types";
 
+export interface IProps {
+  navigation: StackNavigationProp;
+}
 
-export default class CameraPage extends Component {
-
+export interface IState {
+  hasCameraPermission: boolean;
+  cameraType: any;
+  isCameraVisible: boolean;
+  latestImage: any;
+  labels: any[];
+  infos: {
+    category: string;
+    actions: any[];
+    info: string;
+  };
+}
+export default class CameraPage extends Component<IProps, IState> {
   static navigationOptions = ({ navigation }) => {
     const { params } = navigation.state;
-  }
+  };
+
+  camera: any;
 
   state = {
     hasCameraPermission: true,
@@ -19,10 +44,10 @@ export default class CameraPage extends Component {
     latestImage: null,
     labels: [],
     infos: {
-      category: '',
+      category: "",
       actions: [],
-      info: ''
-    }
+      info: "",
+    },
   };
 
   constructor(props) {
@@ -40,7 +65,6 @@ export default class CameraPage extends Component {
                   <MaterialIcons name="camera-alt" size={40} color="#1083bb" />
                 </TouchableOpacity>
 
-
                 {this.state.latestImage && (
                   <Image
                     style={styles.latestImage}
@@ -50,24 +74,30 @@ export default class CameraPage extends Component {
                 )}
 
                 <View style={styles.textBox}>
-                  <Text style={styles.textBoxBig}>What this is: {this.state.infos.category}</Text>
-                  <Text style={styles.textBoxBig}>What you can do: {this.state.infos.actions.join(", ")}!</Text>
-                  <Text style={styles.textBoxText}>{this.state.infos.info}</Text>
+                  <Text style={styles.textBoxBig}>
+                    What this is: {this.state.infos.category}
+                  </Text>
+                  <Text style={styles.textBoxBig}>
+                    What you can do: {this.state.infos.actions.join(", ")}!
+                  </Text>
+                  <Text style={styles.textBoxText}>
+                    {this.state.infos.info}
+                  </Text>
                 </View>
 
-                {this.state.infos.actions !== 'Unknown' &&
+                {this.state.infos.actions !== ["Unknown"] &&
                   this.state.infos.actions.map((action, index) => (
                     <Button
                       key={index}
-                      backgroundColor="green"
-                      onPress={() => this.props.navigation.navigate('Map', { targetLocation: action })}
+                      style={styles.button}
+                      onPress={() =>
+                        this.props.navigation.navigate("Map", {
+                          targetLocation: action,
+                        })
+                      }
                       title={`${action}!`}
-                      borderRadius={100}
-                      color="white"
                     />
-                  ))
-
-                }
+                  ))}
               </View>
             </View>
           </ScrollView>
@@ -76,7 +106,7 @@ export default class CameraPage extends Component {
           <Camera
             style={styles.camera}
             type={this.state.cameraType}
-            ref={ref => {
+            ref={(ref) => {
               this.camera = ref;
             }}
           >
@@ -109,13 +139,12 @@ export default class CameraPage extends Component {
     );
   }
 
-
   flipCamera = () => {
     this.setState({
       cameraType:
         this.state.cameraType === Camera.Constants.Type.back
           ? Camera.Constants.Type.front
-          : Camera.Constants.Type.back
+          : Camera.Constants.Type.back,
     });
   };
 
@@ -123,7 +152,7 @@ export default class CameraPage extends Component {
     if (this.camera) {
       let photo = await this.camera.takePictureAsync({ base64: true });
 
-      let imageInformation = await getImageInformation(photo.base64);
+      let imageInformation = (await getImageInformation(photo.base64)) as any;
 
       this.setState({
         latestImage: photo.uri,
@@ -131,11 +160,11 @@ export default class CameraPage extends Component {
         infos: {
           category: imageInformation.category,
           actions: imageInformation.actions,
-          info: imageInformation.info
-        }
+          info: imageInformation.info,
+        },
       });
-    };
-  }
+    }
+  };
 
   openCamera = () => {
     const { hasCameraPermission } = this.state;
@@ -148,37 +177,25 @@ export default class CameraPage extends Component {
 
   closeCamera = () => {
     this.setState({
-      isCameraVisible: false
+      isCameraVisible: false,
     });
   };
 }
 
-takePicture = async () => {
-  if (this.camera) {
-    let photo = await this.camera.takePictureAsync({ base64: true });
-
-    let formData = new FormData();
-    formData.append("image", photo.base64);
-    formData.append("type", "base64");
-
-    this.props.navigation.navigate('Catalog')
-  }
-}
-
-const styles = {
+const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
   mainContent: {
-    flex: 1
+    flex: 1,
   },
   scroll: {
-    flex: 1
+    flex: 1,
   },
   textBox: {
     alignItems: "center",
     justifyContent: "center",
-    padding: 5
+    padding: 5,
   },
   textBoxText: {
     fontSize: 14,
@@ -186,12 +203,12 @@ const styles = {
   },
   textBoxBig: {
     fontSize: 18,
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   buttonContainer: {
     alignItems: "center",
     marginTop: 20,
-    flex: 1
+    flex: 1,
   },
   latestImage: {
     width: 250,
@@ -199,39 +216,44 @@ const styles = {
     marginTop: 10,
     borderWidth: 5,
     borderColor: "#FFF",
-    alignSelf: "center"
+    alignSelf: "center",
   },
   camera: {
-    flex: 1
+    flex: 1,
   },
   cameraFiller: {
-    flex: 8
+    flex: 8,
   },
   cameraContent: {
     flex: 2,
     backgroundColor: "transparent",
-    flexDirection: "row"
+    flexDirection: "row",
   },
   buttonFlipCamera: {
     flex: 3,
     padding: 10,
     alignSelf: "flex-end",
-    alignItems: "center"
+    alignItems: "center",
   },
   buttonTextFlipCamera: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#e8e827"
+    color: "#e8e827",
   },
   buttonCamera: {
     flex: 4,
     alignSelf: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   buttonCloseCamera: {
     flex: 3,
     padding: 10,
     alignSelf: "flex-end",
-    alignItems: "center"
-  }
-};
+    alignItems: "center",
+  },
+  button: {
+    backgroundColor: "green",
+    borderRadius: 100,
+    color: "white",
+  },
+});
