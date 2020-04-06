@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Text,
   View,
@@ -13,173 +13,139 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { getImageInformation } from "../service/vision-api";
 import { Button } from "react-native-elements";
 import { StackNavigationProp } from "react-navigation-stack/lib/typescript/src/vendor/types";
+import { ItemCategory, CategoryName, Action } from "../types";
 
 export interface IProps {
   navigation: StackNavigationProp;
 }
 
-export interface IState {
-  hasCameraPermission: boolean;
-  cameraType: any;
-  isCameraVisible: boolean;
-  latestImage: any;
-  labels: any[];
-  infos: {
-    category: string;
-    actions: any[];
-    info: string;
-  };
-}
-export default class CameraPage extends Component<IProps, IState> {
-  static navigationOptions = ({ navigation }) => {
-    const { params } = navigation.state;
-  };
-
-  camera: any;
-
-  state = {
-    hasCameraPermission: true,
-    cameraType: Camera.Constants.Type.back,
-    isCameraVisible: true,
-    latestImage: null,
+export default function CameraPage({ navigation }: IProps) {
+  const [hasPermission, setHasPermission] = useState<boolean>(false);
+  const [cameraType, setCameraType] = useState(Camera.Constants.Type.back);
+  const [cameraVisible, setCameraVisible] = useState<boolean>(true);
+  const [image, setImage] = useState<any>(null);
+  const [labels, setLabels] = useState<any[]>([]);
+  const [infos, setInfos] = useState<ItemCategory>({
+    name: CategoryName.UNKNOWN,
     labels: [],
-    infos: {
-      category: "",
-      actions: [],
-      info: "",
-    },
-  };
+    actions: [],
+    info: "",
+  });
 
-  constructor(props) {
-    super(props);
-  }
+  let camera = useRef<Camera>({} as Camera);
 
-  render() {
-    return (
-      <View style={styles.container}>
-        {!this.state.isCameraVisible && (
-          <ScrollView style={styles.scroll}>
-            <View style={styles.mainContent}>
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity onPress={this.openCamera}>
-                  <MaterialIcons name="camera-alt" size={40} color="#1083bb" />
-                </TouchableOpacity>
+  useEffect(() => {
+    (async () => {
+      const { granted } = await Camera.requestPermissionsAsync();
+      setHasPermission(granted);
+    })();
+  }, []);
 
-                {this.state.latestImage && (
-                  <Image
-                    style={styles.latestImage}
-                    resizeMode={"cover"}
-                    source={{ uri: this.state.latestImage }}
-                  />
-                )}
-
-                <View style={styles.textBox}>
-                  <Text style={styles.textBoxBig}>
-                    What this is: {this.state.infos.category}
-                  </Text>
-                  <Text style={styles.textBoxBig}>
-                    What you can do: {this.state.infos.actions.join(", ")}!
-                  </Text>
-                  <Text style={styles.textBoxText}>
-                    {this.state.infos.info}
-                  </Text>
-                </View>
-
-                {this.state.infos.actions !== ["Unknown"] &&
-                  this.state.infos.actions.map((action, index) => (
-                    <Button
-                      key={index}
-                      style={styles.button}
-                      onPress={() =>
-                        this.props.navigation.navigate("Map", {
-                          targetLocation: action,
-                        })
-                      }
-                      title={`${action}!`}
-                    />
-                  ))}
-              </View>
-            </View>
-          </ScrollView>
-        )}
-        {this.state.isCameraVisible && (
-          <Camera
-            style={styles.camera}
-            type={this.state.cameraType}
-            ref={(ref) => {
-              this.camera = ref;
-            }}
-          >
-            <View style={styles.cameraFiller} />
-            <View style={styles.cameraContent}>
-              <TouchableOpacity
-                style={styles.buttonFlipCamera}
-                onPress={this.flipCamera}
-              >
-                <MaterialIcons name="flip" size={25} color="#e8e827" />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.buttonCamera}
-                onPress={this.takePicture}
-              >
-                <MaterialIcons name="camera" size={50} color="#e8e827" />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.buttonCloseCamera}
-                onPress={this.closeCamera}
-              >
-                <MaterialIcons name="close" size={25} color="#e8e827" />
-              </TouchableOpacity>
-            </View>
-          </Camera>
-        )}
-      </View>
+  const flipCamera = () => {
+    setCameraType(
+      cameraType === Camera.Constants.Type.back
+        ? Camera.Constants.Type.front
+        : Camera.Constants.Type.back
     );
-  }
-
-  flipCamera = () => {
-    this.setState({
-      cameraType:
-        this.state.cameraType === Camera.Constants.Type.back
-          ? Camera.Constants.Type.front
-          : Camera.Constants.Type.back,
-    });
   };
 
-  takePicture = async () => {
-    if (this.camera) {
-      let photo = await this.camera.takePictureAsync({ base64: true });
-
-      let imageInformation = (await getImageInformation(photo.base64)) as any;
-
-      this.setState({
-        latestImage: photo.uri,
-        isCameraVisible: false,
-        infos: {
-          category: imageInformation.category,
-          actions: imageInformation.actions,
-          info: imageInformation.info,
-        },
-      });
+  const takePicture = async () => {
+    let photo = await camera.current.takePictureAsync({ base64: true });
+    if (photo.base64) {
+      photo.base64 = photo.base64 as string;
+      let imageInformation = await getImageInformation(photo.base64);
+      setImage(photo.uri);
+      setCameraVisible(false);
+      setInfos(imageInformation);
     }
   };
 
-  openCamera = () => {
-    const { hasCameraPermission } = this.state;
-    if (!hasCameraPermission) {
+  const openCamera = () => {
+    if (!hasPermission) {
       Alert.alert("Error", "No access to camera");
     } else {
-      this.setState({ isCameraVisible: true });
+      setCameraVisible(true);
     }
   };
 
-  closeCamera = () => {
-    this.setState({
-      isCameraVisible: false,
-    });
-  };
+  if (hasPermission === null) {
+    return <View />;
+  }
+  if (hasPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
+
+  return (
+    <View style={styles.container}>
+      {!cameraVisible && (
+        <ScrollView style={styles.scroll}>
+          <View style={styles.mainContent}>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity onPress={openCamera}>
+                <MaterialIcons name="camera-alt" size={40} color="#1083bb" />
+              </TouchableOpacity>
+
+              {image && (
+                <Image
+                  style={styles.latestImage}
+                  resizeMode={"cover"}
+                  source={{ uri: image }}
+                />
+              )}
+
+              <View style={styles.textBox}>
+                <Text style={styles.textBoxBig}>
+                  What this is: {infos.name}
+                </Text>
+                <Text style={styles.textBoxBig}>
+                  What you can do: {infos.actions.join(", ")}!
+                </Text>
+                <Text style={styles.textBoxText}>{infos.info}</Text>
+              </View>
+
+              {!infos.actions.includes(Action.UNKNOWN) &&
+                infos.actions.map((action, index) => (
+                  <Button
+                    key={index}
+                    style={styles.button}
+                    onPress={() =>
+                      navigation.navigate("Map", {
+                        targetLocation: action,
+                      })
+                    }
+                    title={`${action}!`}
+                  />
+                ))}
+            </View>
+          </View>
+        </ScrollView>
+      )}
+      {cameraVisible && (
+        <Camera style={styles.camera} type={cameraType} ref={camera}>
+          <View style={styles.cameraFiller} />
+          <View style={styles.cameraContent}>
+            <TouchableOpacity
+              style={styles.buttonFlipCamera}
+              onPress={flipCamera}
+            >
+              <MaterialIcons name="flip" size={25} color="#e8e827" />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.buttonCamera} onPress={takePicture}>
+              <MaterialIcons name="camera" size={50} color="#e8e827" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.buttonCloseCamera}
+              onPress={() => setCameraVisible(false)}
+            >
+              <MaterialIcons name="close" size={25} color="#e8e827" />
+            </TouchableOpacity>
+          </View>
+        </Camera>
+      )}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

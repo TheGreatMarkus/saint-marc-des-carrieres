@@ -1,14 +1,9 @@
-import React, { Component } from "react";
-import {
-  Platform,
-  StyleSheet,
-  Text,
-  View,
-  ImageBackground,
-} from "react-native";
+import React from "react";
+import { StyleSheet, Text, View, ImageBackground } from "react-native";
 import { Button } from "react-native-elements";
-import * as Font from "expo-font";
 import { StackNavigationProp } from "react-navigation-stack/lib/typescript/src/vendor/types";
+import { useFonts } from "@use-expo/font";
+import { AppLoading } from "expo";
 
 export interface IProps {
   navigation: StackNavigationProp;
@@ -17,59 +12,46 @@ export interface IProps {
 export interface IState {
   fontLoaded: boolean;
 }
-export default class HomePage extends Component<IProps, IState> {
-  constructor(props) {
-    super(props);
+
+HomePage["navigationOptions"] = {
+  headerShown: false,
+};
+
+export default function HomePage({ navigation }: IProps) {
+  let [fontsLoaded] = useFonts({
+    "bangers-font": require("../../assets/fonts/Bangers-Regular.ttf"),
+  });
+
+  if (!fontsLoaded) {
+    return <AppLoading />;
   }
 
-  state = {
-    fontLoaded: false,
-  };
+  return (
+    <View style={styles.container}>
+      <ImageBackground
+        source={require("../../assets/wallpaper2.png")}
+        style={{ width: "100%", height: "100%" }}
+      >
+        <Text style={styles.headerText}>Trash-It!</Text>
+        <View style={styles.btnContainer}>
+          <Button
+            buttonStyle={styles.button}
+            titleStyle={{ color: "green" }}
+            onPress={() => navigation.navigate("Camera")}
+            title="Identify Waste"
+          />
+          <Text>{"\n"}</Text>
 
-  componentDidMount() {
-    Font.loadAsync({
-      bangers: require("../../assets/fonts/Bangers-Regular.ttf"),
-    }).then(() => {
-      this.setState({ fontLoaded: true });
-    });
-  }
-
-  static navigationOptions = {
-    //To hide the NavigationBar from current Screen
-    headerShown: false,
-  };
-
-  render() {
-    if (!this.state.fontLoaded) {
-      return <Text>Loading</Text>;
-    }
-    return (
-      <View style={styles.container}>
-        <ImageBackground
-          source={require("../../assets/wallpaper2.png")}
-          style={{ width: "100%", height: "100%" }}
-        >
-          <Text style={styles.headerText}>Trash-It!</Text>
-          <View style={styles.btnContainer}>
-            <Button
-              buttonStyle={styles.button}
-              titleStyle={{ color: "green" }}
-              onPress={() => this.props.navigation.navigate("Camera")}
-              title="Identify Waste"
-            />
-            <Text>{"\n"}</Text>
-
-            <Button
-              buttonStyle={styles.button}
-              titleStyle={{ color: "green" }}
-              onPress={() => this.props.navigation.navigate("Map")}
-              title="Look at Map"
-            />
-          </View>
-        </ImageBackground>
-      </View>
-    );
-  }
+          <Button
+            buttonStyle={styles.button}
+            titleStyle={{ color: "green" }}
+            onPress={() => navigation.navigate("Map")}
+            title="Look at Map"
+          />
+        </View>
+      </ImageBackground>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -84,7 +66,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 100,
     fontWeight: "bold",
-    fontFamily: "bangers",
+    fontFamily: "bangers-font",
   },
   btnContainer: {
     flex: 1,

@@ -1,88 +1,90 @@
 import { env } from "../../env";
+import { ItemCategory, Action, CategoryName } from "../types";
 
 const googleVisionApi = "https://vision.googleapis.com/v1/images:annotate";
 const numResults = 7;
 
-export const actions = {
-  recycle: "Recycle",
-  compost: "Compost",
-  trash: "Trash",
-  ewaste: "E-Waste Management",
-};
-
-const itemCategories = [
+const itemCategories: ItemCategory[] = [
   {
-    name: "Coffee",
+    name: CategoryName.COFFEE,
     labels: ["coffee"],
-    actions: [actions.recycle, actions.compost],
+    actions: [Action.RECYCLE, Action.COMPOST],
     info:
       "Coffee Cups are often recyclable or compostable, depending on material.",
   },
   {
-    name: "Aluminum Can",
+    name: CategoryName.ALUMINUM_CAN,
     labels: ["aluminum can"],
-    actions: [actions.recycle],
+    actions: [Action.RECYCLE],
     info: "All recycling cans can be recycled!",
   },
   {
-    name: "Drink",
+    name: CategoryName.DRINK,
     labels: ["drink", "juice", "liquid"],
-    actions: [actions.recycle, actions.trash],
+    actions: [Action.RECYCLE, Action.TRASH],
     info:
       "Drink containers are often made of recyclable plastic and glass. Please check the type of container before disposing of the drink",
   },
   {
-    name: "Metal",
+    name: CategoryName.METAL,
     labels: ["aluminum", "tin", "metal"],
-    actions: [actions.recycle],
+    actions: [Action.RECYCLE],
     info: "Metal is infinitely recyclable!",
   },
   {
-    name: "Paper",
+    name: CategoryName.PAPER,
     labels: ["cardboard", "paper"],
-    actions: [actions.recycle, actions.compost],
+    actions: [Action.RECYCLE, Action.COMPOST],
     info:
       "Clean paper products are both recyclable and compostable. Soiled paper, such as greasy pizza boxes, are compostable but not recyclable!",
   },
   {
-    name: "Plastic",
+    name: CategoryName.PLASTIC,
     labels: ["plastic"],
-    actions: [actions.recycle],
+    actions: [Action.RECYCLE],
     info:
       "Plastics are often recyclable, but there are a few exceptions: plastic bags, straws and coffee cups. Additionally, only CLEAN plastics are recyclable, so rinse first!",
   },
   {
-    name: "Glass",
+    name: CategoryName.GLASS,
     labels: ["glass"],
-    actions: [actions.recycle],
+    actions: [Action.RECYCLE],
     info: "Glass is infinitely recyclable!",
   },
   {
-    name: "Organic Material",
+    name: CategoryName.ORGANIC,
     labels: ["food", "apple", "banana", "fruit"],
-    actions: [actions.compost, actions.trash],
+    actions: [Action.COMPOST, Action.TRASH],
     info:
       "Things that are compostable include some foods, dead leaves, fruit and vegetable scraps, cardboard, and more. Organics that arent compostable include things that emit odors and attract rodents and flies, such as fats and oils, dairy products and meat products.",
   },
   {
-    name: "E-Waste",
-    labels: ["computer", "smartphone", "phone"],
-    actions: [actions.ewaste],
+    name: CategoryName.EWASTE,
+    labels: [
+      "computer",
+      "smartphone",
+      "phone",
+      "electronic",
+      "technology",
+      "laptop",
+    ],
+    actions: [Action.EWASTE],
     info:
       "If it's an electronic device and you wish to dispose of it (defective, etc.), it's e-waste. Dispose of it in specially designated areas in your city.",
   },
   {
-    name: "Trash",
+    name: CategoryName.TRASH,
     labels: ["trash"],
-    actions: [actions.trash],
+    actions: [Action.TRASH],
     info:
       "Trash is usually composite materials or plastics that aren't recyclable, such as cereal, cookie or cracker wrappers, black plastic containers, coffee cups, bubble wrap, plastic or foil wrappers, straws, toothpicks, ribbons, broken dishes, etc.",
   },
 ];
 
-const unknownItem = {
-  category: "Unknown",
-  actions: ["Unknown"],
+const unknownItem: ItemCategory = {
+  name: CategoryName.UNKNOWN,
+  labels: [],
+  actions: [Action.UNKNOWN],
   info:
     "The item's material is unclear. Please conduct your own research as to what action to take",
 };
@@ -98,8 +100,10 @@ const unknownItem = {
  *
  * @param {string} base64Image
  */
-export const getImageInformation = async (base64Image) => {
-  let response = await fetch(`${googleVisionApi}?key=${env.visionApiKey}`, {
+export const getImageInformation = async (
+  base64Image: string
+): Promise<ItemCategory> => {
+  return fetch(`${googleVisionApi}?key=${env.apiKey}`, {
     method: "POST",
     body: JSON.stringify({
       requests: [
@@ -116,35 +120,23 @@ export const getImageInformation = async (base64Image) => {
         },
       ],
     }),
-  });
-
-  let objectInfo = await response
-    .json()
+  })
+    .then((reponse) => {
+      return reponse.json();
+    })
     .then((data) => {
       let labels = [];
-      for (const { mid, description, score, topicality } of data.responses[0]
-        .labelAnnotations) {
+      for (const { description } of data.responses[0].labelAnnotations) {
         labels.push(description);
       }
 
       let labelString = labels.join(" ");
 
-      let result = categorizeItem(labelString);
-      const { category, actions, info } = result;
-
-      const imageInformation = {
-        category: category,
-        actions,
-        info: info,
-      };
-
-      return imageInformation;
+      return categorizeItem(labelString);
     })
     .catch((error) => {
-      console.log(error);
+      return unknownItem;
     });
-
-  return objectInfo;
 };
 
 /**
@@ -152,25 +144,23 @@ export const getImageInformation = async (base64Image) => {
  * @param {string} string
  * @param {string[]} keywords
  */
-const stringContainsKeywords = (string, keywords) => {
+const stringContainsKeywords = (string: string, keywords: string[]) => {
   let regex = new RegExp(`\\b(${keywords.join("|")})\\b`, "i");
-  console.log(`string: ${string}`);
+  // console.log(`string: ${string}`);
   // console.log(`regex: ${regex}`);
   // console.log(`search: ${string.search(regex)}`);
   return string.search(regex) !== -1;
 };
 
-const categorizeItem = (labelString) => {
-  for (const { name, labels, actions, info } of itemCategories) {
-    console.log(`\n\n\nTrying ${name} with labels ${labels.join()}`);
-    console.log(`labelString: ${labelString}`);
-    if (stringContainsKeywords(labelString, labels)) {
-      return {
-        category: name,
-        actions: actions,
-        info: info,
-      };
-    }
+const categorizeItem = (labelString: string): ItemCategory => {
+  const result = itemCategories.find((category) => {
+    return stringContainsKeywords(labelString, category.labels);
+  });
+  console.log("\n\nSEARCH RESULTS");
+  console.log({ result, labelString });
+
+  if (!result) {
+    return unknownItem;
   }
-  return unknownItem;
+  return result;
 };
