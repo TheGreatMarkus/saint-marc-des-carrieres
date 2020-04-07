@@ -82,5 +82,5 @@ export const unknownItem: ItemCategory = {
   labels: [],
   actions: [Action.UNKNOWN],
   info:
-    "The item's material is unclear. Please conduct your own research as to what action to take",
+    "The item's material is unclear. Either try taking another picture or conducting your own research as to what action to take.",
 };

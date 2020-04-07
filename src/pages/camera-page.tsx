@@ -20,6 +20,7 @@ import {
   PAGES,
   LoadingState,
 } from "../constants/constants";
+import { unknownItem } from "../data/categories";
 
 export interface IProps {
   navigation: StackNavigationProp;
@@ -33,12 +34,7 @@ export default function CameraPage({ navigation }: IProps) {
   const [cameraType, setCameraType] = useState<CameraType>(CameraType.BACK);
   const [showCamera, setShowCamera] = useState<boolean>(true);
   const [image, setImage] = useState<any>(null);
-  const [infos, setInfos] = useState<ItemCategory>({
-    name: CategoryName.UNKNOWN,
-    labels: [],
-    actions: [],
-    info: "",
-  });
+  const [infos, setInfos] = useState<ItemCategory>(unknownItem);
 
   let camera = useRef<Camera>({} as Camera);
 
@@ -84,10 +80,6 @@ export default function CameraPage({ navigation }: IProps) {
       setShowCamera(true);
     }
   };
-
-  if (hasPermission == null || hasPermission === false) {
-    return <AppLoading />;
-  }
 
   return (
     <View style={styles.container}>
