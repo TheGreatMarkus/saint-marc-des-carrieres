@@ -26,3 +26,12 @@ export enum Action {
   EWASTE = "E-Waste Management",
   UNKNOWN = "Unknown",
 }
+
+export enum CameraType {
+  BACK = 0,
+  FRONT = 1,
+}
+
+export interface Env {
+  apiKey: string;
+}

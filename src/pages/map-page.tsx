@@ -30,7 +30,6 @@ export default function MapPage({ navigation }: IProps) {
     longitude: -73.968639,
   });
   const [targetText, setTargetText] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const targetLocation = navigation.getParam("targetLocation", "") as Action;
@@ -159,9 +158,11 @@ export default function MapPage({ navigation }: IProps) {
         ))}
       </MapView>
 
-      <View style={styles.targetText}>
-        <Text style={{ fontSize: 18 }}>{targetText}</Text>
-      </View>
+      {targetText != "" && targetText != null && (
+        <View style={styles.targetText}>
+          <Text style={{ fontSize: 18 }}>{targetText}</Text>
+        </View>
+      )}
 
       <View style={styles.mapContainer}>
         <Button
@@ -226,12 +227,12 @@ const styles = StyleSheet.create({
     left: 10,
   },
   mapButton: {
-    width: 100,
-    marginTop: 2,
-    marginBottom: 2,
+    marginTop: 4,
+    marginBottom: 4,
   },
   mapButtonText: {
     color: "white",
+    fontSize: 20,
   },
   recycleButton: {
     backgroundColor: "blue",
@@ -250,5 +251,8 @@ const styles = StyleSheet.create({
     top: 15,
     backgroundColor: "white",
     padding: 10,
+    borderColor: "grey",
+    borderWidth: 1,
+    borderRadius: 1000,
   },
 });

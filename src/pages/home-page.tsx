@@ -1,9 +1,10 @@
 import React from "react";
 import { StyleSheet, Text, View, ImageBackground } from "react-native";
-import { Button } from "react-native-elements";
 import { StackNavigationProp } from "react-navigation-stack/lib/typescript/src/vendor/types";
 import { useFonts } from "@use-expo/font";
 import { AppLoading } from "expo";
+import { PAGES } from "../constants/constants";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 export interface IProps {
   navigation: StackNavigationProp;
@@ -30,24 +31,24 @@ export default function HomePage({ navigation }: IProps) {
     <View style={styles.container}>
       <ImageBackground
         source={require("../../assets/wallpaper2.png")}
-        style={{ width: "100%", height: "100%" }}
+        style={StyleSheet.absoluteFill}
       >
         <Text style={styles.headerText}>Trash-It!</Text>
         <View style={styles.btnContainer}>
-          <Button
-            buttonStyle={styles.button}
-            titleStyle={{ color: "green" }}
-            onPress={() => navigation.navigate("Camera")}
-            title="Identify Waste"
-          />
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate(PAGES.camera)}
+          >
+            <Text style={styles.buttonText}>Identify Waste</Text>
+          </TouchableOpacity>
           <Text>{"\n"}</Text>
 
-          <Button
-            buttonStyle={styles.button}
-            titleStyle={{ color: "green" }}
-            onPress={() => navigation.navigate("Map")}
-            title="Look at Map"
-          />
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate(PAGES.map)}
+          >
+            <Text style={styles.buttonText}>Look at Map</Text>
+          </TouchableOpacity>
         </View>
       </ImageBackground>
     </View>
@@ -70,12 +71,21 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     flex: 1,
+    padding: 40,
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "stretch",
   },
   button: {
-    width: 200,
+    justifyContent: "center",
+    alignContent: "center",
     borderRadius: 100,
     backgroundColor: "white",
+    padding: 10,
+  },
+  buttonText: {
+    color: "green",
+    fontSize: 25,
+    fontWeight: "bold",
+    alignSelf: "center",
   },
 });
