@@ -1,5 +1,6 @@
 # Trash It
-Project submission for the 2020 Hackatown competition.
+
+Winner of the "Best Sustainable Development Hack" for Hackatown 2020
 
 [Link to Devpost](https://devpost.com/software/trash-it)
 
